@@ -16,21 +16,24 @@
                 <img src="{{ url_for('static', filename='images/' + image) }}" alt="商品画像">
             </div>
             <div class="scale">
-                <div>嫌い</div>
-                <input type="radio" id="r1" name="rating" value="1" required>
+                <label class="edge-label">嫌い</label>                <input type="radio" id="r1" name="rating" value="1" required>
+                
                 <label for="r1">とても嫌い</label>
-                <input type="radio" id="r2" name="rating" value="2" required>
+                <input type="radio" id="r2" name="rating" value="2" >
                 <label for="r2">嫌い</label>
-                <input type="radio" id="r3" name="rating" value="3" required>
+                <input type="radio" id="r3" name="rating" value="3" >
                 <label for="r3">少し嫌い</label>
-                <input type="radio" id="r4" name="rating" value="4" required>
+                <input type="radio" id="r4" name="rating" value="4" >
                 <label for="r4">どちらでもない</label>
-                <input type="radio" id="r5" name="rating" value="5" required>
+                <input type="radio" id="r5" name="rating" value="5" >
                 <label for="r5">少し好き</label>
-                <input type="radio" id="r6" name="rating" value="6" required>
+                <input type="radio" id="r6" name="rating" value="6" >
                 <label for="r6">好き</label>
-                <input type="radio" id="r7" name="rating" value="7" required>
+                <input type="radio" id="r7" name="rating" value="7" >
                 <label for="r7">とても好き</label>
+            
+                <label class="edge-label">好き</label>
+            
             </div>
             <input type="hidden" name="image" value="{{ image }}">
             <button type="submit">次へ</button>

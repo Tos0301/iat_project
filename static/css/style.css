@@ -53,6 +53,22 @@ body {
     border-color: #4CAF50;
 }
 
+/* 左右ラベルもボタンと同じ大きさ・形状にする */
+.edge-label {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #eee;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    height: 42px;
+    font-size: 14px;
+}
+
+
 
 button {
     padding: 10px 20px;
