@@ -24,8 +24,13 @@ def index():
 
         return redirect(url_for('index'))
 
-    current_image = images[len(results)]
-    return render_template('index.html', image=current_image)
+    current_index = len(results)
+    total_images = len(images)
+    current_image = images[current_index]
+    return render_template('index.html',
+                           image=current_image,
+                           progress=f"{current_index + 1} / {total_images}")
+
 
 
 if __name__ == '__main__':

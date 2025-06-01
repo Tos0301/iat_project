@@ -6,22 +6,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div class="progress-indicator">
+        {{ progress }}
+    </div>
     <div class="container">
-        <h2>以下の商品の印象を7段階で評価してください</h2>
+        <h1>以下の商品に対する印象を7段階で評価してください</h1>
         <form method="POST">
             <div class="image-frame">
                 <img src="{{ url_for('static', filename='images/' + image) }}" alt="商品画像">
             </div>
             <div class="scale">
-                <label>嫌い</label>
-                <input type="radio" name="rating" value="1" required> とても嫌い
-                <input type="radio" name="rating" value="2"> 嫌い
-                <input type="radio" name="rating" value="3"> 少し嫌い
-                <input type="radio" name="rating" value="4"> どちらでもない
-                <input type="radio" name="rating" value="5"> 少し好き
-                <input type="radio" name="rating" value="6"> 好き
-                <input type="radio" name="rating" value="7"> とても好き
-                <label>好き</label>
+                <div>嫌い</div>
+                <input type="radio" id="r1" name="rating" value="1" required>
+                <label for="r1">とても嫌い</label>
+                <input type="radio" id="r2" name="rating" value="2" required>
+                <label for="r2">嫌い</label>
+                <input type="radio" id="r3" name="rating" value="3" required>
+                <label for="r3">少し嫌い</label>
+                <input type="radio" id="r4" name="rating" value="4" required>
+                <label for="r4">どちらでもない</label>
+                <input type="radio" id="r5" name="rating" value="5" required>
+                <label for="r5">少し好き</label>
+                <input type="radio" id="r6" name="rating" value="6" required>
+                <label for="r6">好き</label>
+                <input type="radio" id="r7" name="rating" value="7" required>
+                <label for="r7">とても好き</label>
             </div>
             <input type="hidden" name="image" value="{{ image }}">
             <button type="submit">次へ</button>
@@ -29,3 +38,4 @@
     </div>
 </body>
 </html>
+
