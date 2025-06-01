@@ -16,8 +16,8 @@
                 <img src="{{ url_for('static', filename='images/' + image) }}" alt="商品画像">
             </div>
             <div class="scale">
-                <label class="edge-label">嫌い</label>                <input type="radio" id="r1" name="rating" value="1" required>
-                
+                                
+                <input type="radio" id="r1" name="rating" value="1" required>
                 <label for="r1">とても嫌い</label>
                 <input type="radio" id="r2" name="rating" value="2" >
                 <label for="r2">嫌い</label>
@@ -32,8 +32,7 @@
                 <input type="radio" id="r7" name="rating" value="7" >
                 <label for="r7">とても好き</label>
             
-                <label class="edge-label">好き</label>
-            
+                    
             </div>
             <input type="hidden" name="image" value="{{ image }}">
             <button type="submit">次へ</button>
