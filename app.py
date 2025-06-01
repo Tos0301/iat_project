@@ -26,3 +26,8 @@ def index():
 
     current_image = images[len(results)]
     return render_template('index.html', image=current_image)
+
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
