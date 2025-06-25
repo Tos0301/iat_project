@@ -2,11 +2,11 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>IAT実験（完全版）</title>
+  <title>IAT実験</title>
   <style>
     body { text-align: center; background-color: white; font-family: sans-serif; }
     #instruction { margin-top: 100px; font-size: 24px; }
-    #stimulus { margin-top: 150px; font-size: 48px; display: none; height: 200px; }
+    #stimulus { margin-top: 150px; font-size: 48px; display: none; }
     #feedback { color: red; font-size: 36px; margin-top: 20px; }
     .categories {
       position: absolute;
@@ -17,14 +17,14 @@
       justify-content: space-between;
       padding: 0 50px;
     }
-    svg { width: 120px; height: 120px; }
   </style>
 </head>
 <body>
 
 <div id="instruction">
   <p>スペースキーを押すと課題が始まります。</p>
-  <p>図形や単語をD（左手）またはK（右手）で分類してください。</p>
+  <p>単語や図形が画面中央に1つずつ表示されます。</p>
+  <p>カテゴリに応じて <strong>D</strong>（左手）または <strong>K</strong>（右手）キーを押してください。</p>
 </div>
 
 <div class="categories">
@@ -36,111 +36,194 @@
 <div id="feedback"></div>
 
 <script>
-const participantId = prompt("参加者IDを入力してください");
-const counterbalance = parseInt(participantId) % 2 === 0; // true: ブロック3先, false: ブロック5先
+  const participantId = prompt("参加者IDを入力してください");
 
-function createOval() {
-  return `<svg><ellipse cx="60" cy="60" rx="40" ry="60" fill="black"/></svg>`;
-}
-function createSquare() {
-  return `<svg><rect x="10" y="10" width="100" height="100" fill="black"/></svg>`;
-}
+  // カウンターバランス：ID末尾が偶数 → AB順、奇数 → BA順
+  const idNumber = parseInt(participantId.match(/\d+$/));
+  const order = (idNumber % 2 === 0) ? ["A", "B"] : ["B", "A"];
 
-const baseStimuli = {
-  oval: { type: "shape", stimulus: createOval(), label: "楕円" },
-  square: { type: "shape", stimulus: createSquare(), label: "四角" },
-  pleasant: ["すき", "うつくしい", "うれしい"].map(word => ({ type: "word", stimulus: word, label: "快い" })),
-  unpleasant: ["きらい", "みにくい", "やかましい"].map(word => ({ type: "word", stimulus: word, label: "不快" }))
-};
+  const stimuliSets = {
+    A: {
+      block: 3,
+      left: "楕円・快い", right: "四角・不快",
+      stimuli: [
+        { type: "image", stimulus: "mag_a_blue_1.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_2.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_3.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_4.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_5.jpg", correct: "d" },
+        { type: "word", stimulus: "すき", correct: "d" },
+        { type: "word", stimulus: "うれしい", correct: "d" },
+        { type: "word", stimulus: "よい", correct: "d" },
+        { type: "word", stimulus: "うつくしい", correct: "d" },
+        { type: "word", stimulus: "すばらしい", correct: "d" },
 
-function generateBlock(blockNum, leftLabel, rightLabel, leftTypes, rightTypes, nTrials) {
-  const stimuli = [];
-  const all = leftTypes.concat(rightTypes);
-  for (let i = 0; i < nTrials; i++) {
-    const stimType = all[Math.floor(Math.random() * all.length)];
-    const stim = { ...stimType };
-    stim.block = blockNum;
-    stim.left = leftLabel;
-    stim.right = rightLabel;
-    stim.correct = leftTypes.includes(stimType) ? "d" : "k";
-    stimuli.push(stim);
+        { type: "image", stimulus: "mag_b_beige_1.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_2.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_3.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_4.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_5.jpg", correct: "k" },
+        { type: "word", stimulus: "きらい", correct: "k" },
+        { type: "word", stimulus: "わるい", correct: "k" },
+        { type: "word", stimulus: "みにくい", correct: "k" },
+        { type: "word", stimulus: "きたない", correct: "k" },
+        { type: "word", stimulus: "やかましい", correct: "k" }
+      ]
+    },
+    B: {
+      block: 5,
+      left: "楕円・不快", right: "四角・快い",
+      stimuli: [
+        { type: "image", stimulus: "mag_a_blue_1.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_2.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_3.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_4.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_5.jpg", correct: "d" },
+        { type: "word", stimulus: "きらい", correct: "d" },
+        { type: "word", stimulus: "わるい", correct: "d" },
+        { type: "word", stimulus: "みにくい", correct: "d" },
+        { type: "word", stimulus: "きたない", correct: "d" },
+        { type: "word", stimulus: "やかましい", correct: "d" },
+
+        { type: "image", stimulus: "mag_b_beige_1.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_2.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_3.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_4.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_5.jpg", correct: "k" },
+        { type: "word", stimulus: "すき", correct: "k" },
+        { type: "word", stimulus: "うれしい", correct: "k" },
+        { type: "word", stimulus: "よい", correct: "k" },
+        { type: "word", stimulus: "うつくしい", correct: "k" },
+        { type: "word", stimulus: "すばらしい", correct: "k" }
+      ]
+    }
+  };
+
+  const baseBlocks = [
+    {
+      block: 1,
+      left: "楕円", right: "四角",
+      stimuli: [
+        { type: "image", stimulus: "mag_a_blue_1.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_a_2.jpg", correct: "d" },
+        { type: "image", stimulus: "mag_b_beige_1.jpg", correct: "k" },
+        { type: "image", stimulus: "mag_b_2.jpg", correct: "k" }
+      ]
+    },
+    {
+      block: 2,
+      left: "快い", right: "不快",
+      stimuli: [
+        { type: "word", stimulus: "すき", correct: "d" },
+        { type: "word", stimulus: "わるい", correct: "k" }
+      ]
+    },
+    {
+      block: 4,
+      left: "不快", right: "快い",  // 反転
+      stimuli: [
+        { type: "word", stimulus: "すき", correct: "k" },
+        { type: "word", stimulus: "わるい", correct: "d" }
+      ]
+    }
+  ];
+
+  // ブロック順を決定（例：1→2→A→4→B または 1→2→B→4→A）
+  const blockSequence = [
+    baseBlocks[0],  // block 1
+    baseBlocks[1],  // block 2
+    stimuliSets[order[0]],
+    baseBlocks[2],  // block 4
+    stimuliSets[order[1]]
+  ];
+
+  // ----------------------------
+  // 実行用試行セット作成
+  // ----------------------------
+  let allTrials = [];
+
+  blockSequence.forEach(block => {
+    const repetitions = (block.block === 3 || block.block === 5) ? 2 : 5;
+    for (let i = 0; i < repetitions; i++) {
+      const shuffled = [...block.stimuli];
+      shuffle(shuffled);
+      shuffled.forEach(stim => {
+        allTrials.push({
+          block: block.block,
+          left: block.left,
+          right: block.right,
+          ...stim
+        });
+      });
+    }
+  });
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
   }
-  return stimuli;
-}
 
-let trials = [];
+  let trialIndex = -1;
+  let startTime = 0;
 
-// ブロック1：楕円vs四角
-trials = trials.concat(generateBlock(1, "楕円", "四角", [baseStimuli.oval], [baseStimuli.square], 20));
-// ブロック2：快いvs不快
-trials = trials.concat(generateBlock(2, "快い", "不快", baseStimuli.pleasant, baseStimuli.unpleasant, 20));
-
-if (counterbalance) {
-  // ブロック3→4→5 の順
-  trials = trials.concat(generateBlock(3, "楕円・快い", "四角・不快", [baseStimuli.oval, ...baseStimuli.pleasant], [baseStimuli.square, ...baseStimuli.unpleasant], 40));
-  trials = trials.concat(generateBlock(4, "不快", "快い", baseStimuli.unpleasant, baseStimuli.pleasant, 20));
-  trials = trials.concat(generateBlock(5, "楕円・不快", "四角・快い", [baseStimuli.oval, ...baseStimuli.unpleasant], [baseStimuli.square, ...baseStimuli.pleasant], 40));
-} else {
-  // ブロック5→4→3 の順
-  trials = trials.concat(generateBlock(5, "楕円・不快", "四角・快い", [baseStimuli.oval, ...baseStimuli.unpleasant], [baseStimuli.square, ...baseStimuli.pleasant], 40));
-  trials = trials.concat(generateBlock(4, "不快", "快い", baseStimuli.unpleasant, baseStimuli.pleasant, 20));
-  trials = trials.concat(generateBlock(3, "楕円・快い", "四角・不快", [baseStimuli.oval, ...baseStimuli.pleasant], [baseStimuli.square, ...baseStimuli.unpleasant], 40));
-}
-
-let trialIndex = -1;
-let startTime = 0;
-
-document.addEventListener("keydown", async (e) => {
-  if (e.code === "Space" && trialIndex === -1) {
-    document.getElementById("instruction").style.display = "none";
-    nextTrial();
-  }
-
-  if (["KeyD", "KeyK"].includes(e.code) && trialIndex >= 0) {
-    const trial = trials[trialIndex];
-    const response = e.code === "KeyD" ? "d" : "k";
-    const correct = response === trial.correct;
-    const rt = performance.now() - startTime;
-
-    document.getElementById("feedback").innerText = correct ? "" : "×";
-
-    await fetch("/log", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        participant_id: participantId,
-        block: trial.block,
-        stimulus: trial.stimulus.replace(/<[^>]+>/g, ''), // SVG除去
-        response: response,
-        correct: correct,
-        reaction_time: Math.round(rt)
-      })
-    });
-
-    setTimeout(() => {
-      document.getElementById("feedback").innerText = "";
+  document.addEventListener("keydown", async (e) => {
+    if (e.code === "Space" && trialIndex === -1) {
+      document.getElementById("instruction").style.display = "none";
       nextTrial();
-    }, 400);
+    }
+
+    if (["KeyD", "KeyK"].includes(e.code) && trialIndex >= 0) {
+      const trial = allTrials[trialIndex];
+      const response = e.code === "KeyD" ? "d" : "k";
+      const correct = response === trial.correct;
+      const rt = performance.now() - startTime;
+
+      document.getElementById("feedback").innerText = correct ? "" : "×";
+
+      await fetch("/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          participant_id: participantId,
+          block: trial.block,
+          stimulus: trial.stimulus,
+          response: response,
+          correct: correct,
+          reaction_time: Math.round(rt)
+        })
+      });
+
+      setTimeout(() => {
+        document.getElementById("feedback").innerText = "";
+        nextTrial();
+      }, 400);
+    }
+  });
+
+  function nextTrial() {
+    trialIndex++;
+    if (trialIndex >= allTrials.length) {
+      document.getElementById("stimulus").innerText = "終了しました。ありがとうございました。";
+      return;
+    }
+
+    const trial = allTrials[trialIndex];
+    document.getElementById("left-label").innerText = trial.left;
+    document.getElementById("right-label").innerText = trial.right;
+
+    const stimDiv = document.getElementById("stimulus");
+    stimDiv.style.display = "block";
+
+    if (trial.type === "word") {
+      stimDiv.innerHTML = trial.stimulus;
+    } else if (trial.type === "image") {
+      stimDiv.innerHTML = `<img src="/static/images/${trial.stimulus}" width="200">`;
+    }
+
+    startTime = performance.now();
   }
-});
-
-function nextTrial() {
-  trialIndex++;
-  if (trialIndex >= trials.length) {
-    document.getElementById("stimulus").innerText = "終了しました。ありがとうございました。";
-    return;
-  }
-
-  const trial = trials[trialIndex];
-  document.getElementById("left-label").innerText = trial.left;
-  document.getElementById("right-label").innerText = trial.right;
-
-  const stimDiv = document.getElementById("stimulus");
-  stimDiv.style.display = "block";
-  stimDiv.innerHTML = trial.stimulus;
-
-  startTime = performance.now();
-}
 </script>
 </body>
 </html>
