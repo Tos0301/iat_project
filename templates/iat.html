@@ -180,8 +180,13 @@
       const correct = response === trial.correct;
       const rt = performance.now() - startTime;
 
+      // 刺激をすぐ消す
+      document.getElementById("stimulus").style.display = "none";
+
+      // フィードバック表示（誤答時のみ）
       document.getElementById("feedback").innerText = correct ? "" : "×";
 
+      // ログ送信
       await fetch("/log", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,12 +200,14 @@
         })
       });
 
+      // 次の刺激は400ms後に表示
       setTimeout(() => {
         document.getElementById("feedback").innerText = "";
         nextTrial();
       }, 400);
     }
   });
+
 
   function nextTrial() {
     trialIndex++;
