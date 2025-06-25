@@ -174,39 +174,74 @@
       nextTrial();
     }
 
-    if (["KeyD", "KeyK"].includes(e.code) && trialIndex >= 0) {
+    if (["KeyF", "KeyJ"].includes(e.code) && trialIndex >= 0) {
       const trial = allTrials[trialIndex];
-      const response = e.code === "KeyD" ? "d" : "k";
+      const response = e.code === "KeyF" ? "d" : "k";
       const correct = response === trial.correct;
       const rt = performance.now() - startTime;
 
-      // 刺激をすぐ消す
+      // 刺激を即座に非表示
       document.getElementById("stimulus").style.display = "none";
 
-      // フィードバック表示（誤答時のみ）
-      document.getElementById("feedback").innerText = correct ? "" : "×";
-
-      // ログ送信
-      await fetch("/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          participant_id: participantId,
-          block: trial.block,
-          stimulus: trial.stimulus,
-          response: response,
-          correct: correct,
-          reaction_time: Math.round(rt)
-        })
-      });
-
-      // 次の刺激は400ms後に表示
-      setTimeout(() => {
+      if (correct) {
         document.getElementById("feedback").innerText = "";
-        nextTrial();
-      }, 400);
+
+        // 正答した場合のみログを送信
+        await fetch("/log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            participant_id: participantId,
+            block: trial.block,
+            stimulus: trial.stimulus,
+            response: response,
+            correct: correct,
+            reaction_time: Math.round(rt)
+          })
+        });
+
+        // 次の試行へ（400ms待ってから）
+        setTimeout(() => {
+          nextTrial();
+        }, 400);
+      } else {
+        // 誤答時フィードバックのみ表示、次に進まない
+        document.getElementById("feedback").innerText = "×";
+        // 刺激を再表示（同じ試行を繰り返す）
+        setTimeout(() => {
+          document.getElementById("feedback").innerText = "";
+          showCurrentStimulus();  // 同じ刺激を再提示
+        }, 400);
+      }
     }
   });
+
+function showCurrentStimulus() {
+  const trial = allTrials[trialIndex];
+  const stimDiv = document.getElementById("stimulus");
+  stimDiv.style.display = "block";
+
+  document.getElementById("left-label").innerText = trial.left;
+  document.getElementById("right-label").innerText = trial.right;
+
+  if (trial.type === "word") {
+    stimDiv.innerHTML = trial.stimulus;
+  } else if (trial.type === "image") {
+    stimDiv.innerHTML = `<img src="/static/images/${trial.stimulus}" width="200">`;
+  }
+
+  startTime = performance.now();
+}
+
+function nextTrial() {
+  trialIndex++;
+  if (trialIndex >= allTrials.length) {
+    document.getElementById("stimulus").innerText = "終了しました。ありがとうございました。";
+    return;
+  }
+  showCurrentStimulus();
+}
+
 
 
   function nextTrial() {
